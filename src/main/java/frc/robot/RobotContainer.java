@@ -24,7 +24,9 @@ public class RobotContainer {
   private final ExampleSubsystem m_exampleSubsystem = new ExampleSubsystem();
   private final DriveTrain driveTrain = new DriveTrain();
 
-  private final ArcadeDrive arcadeDriveCommand = new ArcadeDrive(driveTrain);
+  private XboxController controller = new XboxController(0);
+
+  private final ArcadeDrive arcadeDriveCommand = new ArcadeDrive(driveTrain, () -> controller.getLeftY(), ()-> controller.getRightX());
   private final ExampleCommand m_autoCommand = new ExampleCommand(m_exampleSubsystem);
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
