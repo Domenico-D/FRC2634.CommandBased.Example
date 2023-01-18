@@ -5,14 +5,15 @@
 package frc.robot.subsystems;
 
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
+import com.fasterxml.jackson.databind.jsontype.PolymorphicTypeValidator.Validity;
 
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
+import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
-
 
 public class DriveTrain extends SubsystemBase {
   /** Creates a new DriveTrain. */
@@ -41,13 +42,13 @@ public class DriveTrain extends SubsystemBase {
     rightMotorCenter = new WPI_TalonFX(Constants.CanDeviceIds.CENTER_RIGHT_MOTOR_ID);
     rightMotorFront = new WPI_TalonFX(Constants.CanDeviceIds.FRONT_RIGHT_MOTOR_ID);
 
-    leftShiftSolenoid = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, 
-      Constants.PCMIds.LEFT_DRIVE_SOLENOID_FORWARD, 
-      Constants.PCMIds.LEFT_DRIVE_SOLENOID_REVERSE);
+    leftShiftSolenoid = new DoubleSolenoid(PneumaticsModuleType.CTREPCM,
+        Constants.PCMIds.LEFT_DRIVE_SOLENOID_FORWARD,
+        Constants.PCMIds.LEFT_DRIVE_SOLENOID_REVERSE);
 
-    rightShiftSolenoid = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, 
-      Constants.PCMIds.RIGHT_DRIVE_SOLENOID_FORWARD, 
-      Constants.PCMIds.RIGHT_DRIVE_SOLENOID_REVERSE);
+    rightShiftSolenoid = new DoubleSolenoid(PneumaticsModuleType.CTREPCM,
+        Constants.PCMIds.RIGHT_DRIVE_SOLENOID_FORWARD,
+        Constants.PCMIds.RIGHT_DRIVE_SOLENOID_REVERSE);
 
     leftMotorControllerGroup = new MotorControllerGroup(leftMotorBack, leftMotorCenter, leftMotorFront);
     rightMotorControllerGroup = new MotorControllerGroup(rightMotorBack, rightMotorCenter, rightMotorFront);
@@ -55,15 +56,25 @@ public class DriveTrain extends SubsystemBase {
     differentialDrive = new DifferentialDrive(leftMotorControllerGroup, rightMotorControllerGroup);
   }
 
-  public void arcadeDrive(double xSpeed, double zRotation){
+  public void arcadeDrive(double xSpeed, double zRotation) {
     differentialDrive.arcadeDrive(xSpeed, zRotation);
   }
 
-  // create func for shifting gears (maybe make it return a bool or something to know what state we in)
+  public void shiftGears() {
+    if (rightShiftSolenoid.get() == Value.kForward) {
+      rightShiftSolenoid.set(Value.kReverse);
+      leftShiftSolenoid.set(Value.kReverse);
+    } else if (rightShiftSolenoid.get() == Value.kReverse) {
+      rightShiftSolenoid.set(Value.kForward);
+      leftShiftSolenoid.set(Value.kForward);
+    } else {
+      rightShiftSolenoid.set(Value.kOff);
+      leftShiftSolenoid.set(Value.kOff);
+    }
+  }
 
   @Override
   public void periodic() {
-    // This method will be called once per scheduler run
-    // hwdhawdawhdhawdhiawh
+
   }
 }
